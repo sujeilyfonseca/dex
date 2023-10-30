@@ -1,12 +1,13 @@
 ARG BASE_IMAGE=alpine
 
-FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.3.0@sha256:904fe94f236d36d65aeb5a2462f88f2c537b8360475f6342e7599194f291fb7e AS xx
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.3.0 AS xx
 
 FROM --platform=$BUILDPLATFORM golang:1.21.3-alpine3.18 AS builder
 
 COPY --from=xx / /
 
-RUN apk add --update alpine-sdk ca-certificates openssl clang lld
+RUN apk update \
+  && apk add --update alpine-sdk ca-certificates openssl clang lld
 
 ARG TARGETPLATFORM
 
@@ -44,10 +45,10 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
 
-ENV GOMPLATE_VERSION=v3.11.5
+ENV GOMPLATE_VERSION=v3.11.5-patched
 
 RUN wget -O /usr/local/bin/gomplate \
-  "https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${TARGETOS:-linux}-${TARGETARCH:-amd64}${TARGETVARIANT}" \
+  "https://github.com/sujeilyfonseca/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${TARGETOS:-linux}-${TARGETARCH:-amd64}${TARGETVARIANT}" \
   && chmod +x /usr/local/bin/gomplate
 
 # For Dependabot to detect base image versions
